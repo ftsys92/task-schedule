@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Events\TaskDurationCalculated;
+use App\Events\TaskDurationCalculationFailed;
 use App\Models\Task;
 use App\Services\OpenAI\Contracts\OpenAIClient;
 use DateInterval;
@@ -14,7 +15,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class ProcessTaskCaptured implements ShouldQueue
+class CalculateTaskDuration implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -38,14 +39,24 @@ class ProcessTaskCaptured implements ShouldQueue
             ),
         );
 
-        $duration = self::isValidInterval($duration);
+        $isValid = self::isValidInterval($duration);
+
+        if (!$isValid) {
+            event(new TaskDurationCalculationFailed(
+                new DateTimeImmutable(),
+                $this->taskId,
+            ));
+
+            return;
+        }
 
         $task->duration = $duration;
         $task->save();
 
         event(new TaskDurationCalculated(
             new DateTimeImmutable(),
-            $this->taskId
+            $this->taskId,
+            $duration
         ));
 
         Log::info([
@@ -55,7 +66,7 @@ class ProcessTaskCaptured implements ShouldQueue
         ]);
     }
 
-    private static function isValidInterval(string $interval)
+    private static function isValidInterval(string $interval): ?string
     {
         try {
             $dateInterval = DateInterval::createFromDateString($interval);

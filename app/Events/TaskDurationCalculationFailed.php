@@ -8,15 +8,14 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class TaskDurationCalculated
+class TaskDurationCalculationFailed
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(
         public DateTimeImmutable $at,
-        public int $taskId,
-        public string $duration
+        public int $taskId
     ) {
-        Log::info('TaskDurationCalculated');
+        Log::info('TaskDurationCalculationFailed');
     }
 }

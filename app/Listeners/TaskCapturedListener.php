@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\TaskCaptured;
-use App\Jobs\ProcessTaskCaptured;
+use App\Jobs\CalculateTaskDuration;
 use Illuminate\Support\Facades\Log;
 
 class TaskCapturedListener
@@ -15,8 +15,6 @@ class TaskCapturedListener
     public function handle(TaskCaptured $event): void
     {
         Log::info('TaskCapturedListener');
-        ProcessTaskCaptured::dispatch(
-            $event->taskId,
-        );
+        CalculateTaskDuration::dispatch($event->taskId);
     }
 }

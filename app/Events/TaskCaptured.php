@@ -12,8 +12,10 @@ class TaskCaptured
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public DateTimeImmutable $at, public int $taskId)
-    {
+    public function __construct(
+        public DateTimeImmutable $at,
+        public int $taskId
+    ) {
         Log::info('TaskCaptured');
     }
 }
