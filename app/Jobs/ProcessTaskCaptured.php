@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Events\TaskDurationCalculated;
 use App\Models\Task;
 use App\Services\OpenAI\Contracts\OpenAIClient;
+use DateInterval;
 use DateTimeImmutable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -28,13 +29,16 @@ class ProcessTaskCaptured implements ShouldQueue
         $duration = $openAIClient->message(
             sprintf(
                 "give a short answer in the exact formats \"X hours\" or \"X days\".
-                if there is not enough information, give approximate estimation but much enough to complete in realistic timeframe.
-                don't add any other words or characters. how much time approximately can take next task:\n\n
+                if there is not enough information, give minimal estimation that will be enough to claarify details.
+                don't add any other words or characters. make sure you follow format required.\n\n
+                how much time approximately can take next task:\n\n
                 Title: %s\nDescription: %s",
                 $task->title,
                 $task->description
             ),
         );
+
+        $duration = self::isValidInterval($duration);
 
         $task->duration = $duration;
         $task->save();
@@ -49,5 +53,15 @@ class ProcessTaskCaptured implements ShouldQueue
             'queue' => $this->queue,
             'task_id' => $task->id,
         ]);
+    }
+
+    private static function isValidInterval(string $interval)
+    {
+        try {
+            $dateInterval = DateInterval::createFromDateString($interval);
+            return $dateInterval !== false ? $interval : null;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }
