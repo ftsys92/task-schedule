@@ -1,0 +1,78 @@
+service: task-schedule
+
+provider:
+    name: aws
+    region: us-east-1
+    vpc:
+      securityGroupIds:
+          - ${ssm:/${sls:stage}/task-schedule/security-group}
+      subnetIds:
+          - ${ssm:/${sls:stage}/task-schedule/subnet-1}
+          - ${ssm:/${sls:stage}/task-schedule/subnet-2}
+          - ${ssm:/${sls:stage}/task-schedule/subnet-3}
+          - ${ssm:/${sls:stage}/task-schedule/subnet-4}
+          - ${ssm:/${sls:stage}/task-schedule/subnet-5}
+          - ${ssm:/${sls:stage}/task-schedule/subnet-6}
+    environment:
+        APP_ENV: ${sls:stage}
+        APP_KEY: ${ssm:/${sls:stage}/task-schedule/app-key}
+        SESSION_DRIVER: cookie
+        DB_CONNECTION: mysql
+        DB_HOST: ${ssm:/${sls:stage}/task-schedule/db-host}
+        DB_PORT: ${ssm:/${sls:stage}/task-schedule/db-port}
+        DB_USERNAME: ${ssm:/${sls:stage}/task-schedule/db-username}
+        DB_PASSWORD: ${ssm:/${sls:stage}/task-schedule/db-password}
+        DB_DATABASE: ${ssm:/${sls:stage}/task-schedule/db-name}
+        QUEUE_CONNECTION: sqs
+        SQS_QUEUE: ${construct:jobs.queueUrl}
+    iam:
+        role:
+            statements:
+              - Effect: "Allow"
+                Action:
+                  - "rds:*"
+                Resource:
+                  - "Fn::Sub": "arn:aws:rds:${AWS::Region}:${AWS::AccountId}:db:${ssm:/${sls:stage}/task-schedule/db-name}"
+
+package:
+    patterns:
+        - '!node_modules/**'
+        - '!public/storage'
+        - '!resources/assets/**'
+        - '!storage/**'
+        - '!tests/**'
+        - '!.env'
+
+functions:
+    web:
+        handler: public/index.php
+        runtime: php-82-fpm
+        timeout: 28
+        events:
+            - httpApi: '*'
+
+    artisan:
+        handler: artisan
+        runtime: php-82-console
+        timeout: 720 # in seconds
+        # Uncomment to also run the scheduler every minute
+        #events:
+        #    - schedule:
+        #          rate: rate(1 minute)
+        #          input: '"schedule:run"'
+
+resources:
+
+
+constructs:
+    jobs:
+        type: queue
+        worker:
+            handler: Bref\LaravelBridge\Queue\QueueHandler
+            runtime: php-82
+            timeout: 60 # seconds
+
+plugins:
+    # We need to include the Bref plugin
+    - ./vendor/bref/bref
+    - serverless-lift
