@@ -66,13 +66,13 @@ class CalculateTaskDuration implements ShouldQueue
         ]);
     }
 
-    private static function isValidInterval(string $interval): ?string
+    private static function isValidInterval(string $interval): bool
     {
         try {
             $dateInterval = DateInterval::createFromDateString($interval);
-            return $dateInterval !== false ? $interval : null;
+            return $dateInterval !== false;
         } catch (\Exception $e) {
-            return null;
+            return false;
         }
     }
 }
