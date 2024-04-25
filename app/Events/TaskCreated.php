@@ -8,7 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class TaskCaptured
+class TaskCreated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -16,6 +16,6 @@ class TaskCaptured
         public DateTimeImmutable $at,
         public int $taskId
     ) {
-        Log::info('TaskCaptured');
+        Log::info('TaskCreated');
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Events\TaskCaptured;
+use App\Events\TaskCreated;
 use App\Http\Requests\StoreTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +25,7 @@ class TaskController
             'description' => $description,
         ]);
 
-        event(new TaskCaptured(
+        event(new TaskCreated(
             $task->created_at->toImmutable(),
             $task->id,
         ));
