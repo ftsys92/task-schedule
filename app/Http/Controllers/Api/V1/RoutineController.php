@@ -32,12 +32,7 @@ class RoutineController
             $routine->id,
         ));
 
-        return new JsonResponse([
-            'id' => $routine->id,
-            'title' => $routine->name,
-            'start_at' => $start_at,
-            'end_at' => $end_at,
-        ], Response::HTTP_CREATED);
+        return new JsonResponse($routine, Response::HTTP_CREATED);
     }
 
     public function delete(Routine $routine): JsonResponse

@@ -16,7 +16,9 @@ class Routine extends Model
         'end_at',
     ];
 
-    protected $cast = [
+    protected $dates = ['start_at', 'end_at'];
+
+    protected $casts = [
         'start_at' => 'datetime',
         'end_at' => 'datetime',
     ];

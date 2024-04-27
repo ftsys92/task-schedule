@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Events\RoutineUpdated;
 use App\Events\TaskCreated;
 use App\Http\Requests\StoreTaskRequest;
+use App\Models\Routine;
 use App\Models\Task;
+use DateTimeImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -15,12 +18,12 @@ class TaskController
         return new JsonResponse(Task::all());
     }
 
-    public function store(StoreTaskRequest $request): JsonResponse
+    public function store(Routine $routine, StoreTaskRequest $request): JsonResponse
     {
         $title = $request->input('title');
         $notes = $request->input('notes');
 
-        $task = Task::create([
+        $task = $routine->tasks()->create([
             'title' => $title,
             'notes' => $notes,
             'status' => Task::STATUS_CREATED,
@@ -28,19 +31,26 @@ class TaskController
 
         event(new TaskCreated(
             $task->created_at->toImmutable(),
+            $routine->id,
             $task->id,
         ));
 
-        return new JsonResponse([
-            'id' => $task->id,
-            'title' => $task->title,
-            'notes' => $task->notes,
-        ], Response::HTTP_CREATED);
+        return new JsonResponse($task, Response::HTTP_CREATED);
     }
 
-    public function delete(Task $task): JsonResponse
+    public function show(Routine $routine, Task $task): JsonResponse
+    {
+        return new JsonResponse($task);
+    }
+
+    public function delete(Routine $routine, Task $task): JsonResponse
     {
         $task->delete();
+
+        event(new RoutineUpdated(
+            new DateTimeImmutable(),
+            $routine->id,
+        ));
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }

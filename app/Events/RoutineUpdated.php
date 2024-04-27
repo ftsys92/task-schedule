@@ -8,15 +8,14 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class TaskCreated
+class RoutineUpdated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(
         public DateTimeImmutable $at,
-        public int $routineId,
-        public int $taskId
+        public int $routineId
     ) {
-        Log::info('TaskCreated');
+        Log::info('RoutineUpdated');
     }
 }
