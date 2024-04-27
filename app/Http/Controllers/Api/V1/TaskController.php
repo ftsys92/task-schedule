@@ -18,11 +18,12 @@ class TaskController
     public function store(StoreTaskRequest $request): JsonResponse
     {
         $title = $request->input('title');
-        $description = $request->input('description');
+        $notes = $request->input('notes');
 
         $task = Task::create([
             'title' => $title,
-            'description' => $description,
+            'notes' => $notes,
+            'status' => Task::STATUS_CREATED,
         ]);
 
         event(new TaskCreated(
@@ -33,7 +34,7 @@ class TaskController
         return new JsonResponse([
             'id' => $task->id,
             'title' => $task->title,
-            'description' => $task->description,
+            'notes' => $task->notes,
         ], Response::HTTP_CREATED);
     }
 

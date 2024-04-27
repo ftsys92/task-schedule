@@ -8,7 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class TaskDurationCalculated
+class TaskDurationCalculationCompleted
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -17,6 +17,6 @@ class TaskDurationCalculated
         public int $taskId,
         public string $duration
     ) {
-        Log::info('TaskDurationCalculated');
+        Log::info('TaskDurationCalculationCompleted');
     }
 }

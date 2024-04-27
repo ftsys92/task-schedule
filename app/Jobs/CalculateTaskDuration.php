@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Events\TaskDurationCalculated;
+use App\Events\TaskDurationCalculationCompleted;
 use App\Events\TaskDurationCalculationFailed;
 use App\Models\Task;
 use App\Services\OpenAI\Contracts\OpenAIClient;
@@ -30,12 +30,12 @@ class CalculateTaskDuration implements ShouldQueue
         $duration = $openAIClient->message(
             sprintf(
                 "give a short answer in the exact formats \"X hours\" or \"X days\".
-                if there is not enough information, give minimal estimation that will be enough to claarify details.
+                if there is not enough information, give medium long estimation that will be enough to clarify details.
                 don't add any other words or characters. make sure you follow format required.\n\n
                 how much time approximately can take next task:\n\n
-                Title: %s\nDescription: %s",
+                Title: %s\n Notes: %s",
                 $task->title,
-                $task->description
+                $task->notes
             ),
         );
 
@@ -51,9 +51,10 @@ class CalculateTaskDuration implements ShouldQueue
         }
 
         $task->duration = $duration;
+        $task->status = Task::STATUS_PENDING;
         $task->save();
 
-        event(new TaskDurationCalculated(
+        event(new TaskDurationCalculationCompleted(
             new DateTimeImmutable(),
             $this->taskId,
             $duration
