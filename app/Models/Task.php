@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Task extends Model
 {
@@ -32,5 +33,17 @@ class Task extends Model
         'notes',
         'duration',
         'status',
+        'start_at',
+        'end_at',
     ];
+
+    protected $cast = [
+        'start_at' => 'datetime',
+        'end_at' => 'datetime',
+    ];
+
+    public function routine(): BelongsTo
+    {
+        return $this->belongsTo(Routine::class);
+    }
 }
