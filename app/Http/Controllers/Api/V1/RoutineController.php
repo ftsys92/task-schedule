@@ -35,6 +35,11 @@ class RoutineController
         return new JsonResponse($routine, Response::HTTP_CREATED);
     }
 
+    public function show(Routine $routine): JsonResponse
+    {
+        return new JsonResponse($routine);
+    }
+
     public function delete(Routine $routine): JsonResponse
     {
         $routine->delete();
