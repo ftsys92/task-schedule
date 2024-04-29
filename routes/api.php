@@ -1,15 +1,15 @@
 <?php
 
-use App\Http\Controllers\Api\V1\RoutineController;
-use App\Http\Controllers\Api\V1\TaskController;
+use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\UserTaskController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/routines/{routine}/tasks', [TaskController::class, 'index']);
-Route::get('/routines/{routine}/tasks/{task}', [TaskController::class, 'show']);
-Route::post('/routines/{routine}/tasks', [TaskController::class, 'store']);
-Route::delete('/routines/{routine}/tasks/{task}', [TaskController::class, 'delete']);
+Route::get('/users', [UserController::class, 'index']);
+Route::get('/users/{user}', [UserController::class, 'show']);
+Route::post('/users', [UserController::class, 'store']);
+Route::delete('/users/{user}', [UserController::class, 'delete']);
 
-Route::get('/routines', [RoutineController::class, 'index']);
-Route::get('/routines/{routine}', [RoutineController::class, 'show']);
-Route::post('/routines', [RoutineController::class, 'store']);
-Route::delete('/routines/{routine}', [RoutineController::class, 'delete']);
+Route::get('/users/{user}/tasks', [UserTaskController::class, 'index']);
+Route::get('/users/{user}/tasks/{task}', [UserTaskController::class, 'show']);
+Route::post('/users/{user}/tasks', [UserTaskController::class, 'store']);
+Route::delete('/users/{user}/tasks/{task}', [UserTaskController::class, 'delete']);

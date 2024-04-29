@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,13 +38,29 @@ class Task extends Model
         'end_at',
     ];
 
-    protected $cast = [
+    protected $dates = [
+        'start_at',
+        'end_at',
+    ];
+
+    protected $casts = [
         'start_at' => 'datetime',
         'end_at' => 'datetime',
     ];
 
-    public function routine(): BelongsTo
+    public function assignee(): BelongsTo
     {
-        return $this->belongsTo(Routine::class);
+        return $this->belongsTo(User::class, 'assignee_id');
     }
+
+    public function scopeDouble(): Builder
+    {
+        return $this->whereIn('status', [
+            self::STATUS_PENDING,
+            self::STATUS_CONFIRMED,
+            self::STATUS_IN_PROGRESS,
+            self::STATUS_PAUSED,
+        ]);
+    }
+
 }

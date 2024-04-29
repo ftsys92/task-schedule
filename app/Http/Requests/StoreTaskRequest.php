@@ -11,6 +11,8 @@ class StoreTaskRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:1000'],
+            'start_at' => ['nullable', 'date', 'after:now'],
+            'end_at' => ['nullable', 'date', 'after:start_at']
         ];
     }
 }

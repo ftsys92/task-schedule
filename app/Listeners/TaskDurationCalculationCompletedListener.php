@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\TaskDurationCalculationCompleted;
+use App\Jobs\CalculateTaskDates;
 use Illuminate\Support\Facades\Log;
 
 class TaskDurationCalculationCompletedListener
@@ -13,6 +14,8 @@ class TaskDurationCalculationCompletedListener
 
     public function handle(TaskDurationCalculationCompleted $event): void
     {
-        Log::info('TaskDurationCalculationCompletedListener');
+        CalculateTaskDates::dispatch(
+            $event->taskId,
+        );
     }
 }
