@@ -38,7 +38,7 @@ class CalculateTaskDates implements ShouldQueue
 
 
         $workingHoursStart = Carbon::parse('08:30 am');
-        $workingHoursEnd = Carbon::parse('16:30 pm');
+        $workingHoursEnd = Carbon::parse('04:30 pm');
 
         // Start at the end time of the last task or 30 minutes from now
         $startAt = null !== $lastTask && $lastTask->end_at
