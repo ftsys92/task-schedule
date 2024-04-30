@@ -22,6 +22,7 @@ class TaskFactory extends Factory
         return [
             'title' => fake()->title(),
             'description' => fake()->text(),
+            'duration' => '1 hour',
         ];
     }
 }

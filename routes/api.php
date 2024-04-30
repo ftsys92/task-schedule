@@ -13,3 +13,5 @@ Route::get('/users/{user}/tasks', [UserTaskController::class, 'index']);
 Route::get('/users/{user}/tasks/{task}', [UserTaskController::class, 'show']);
 Route::post('/users/{user}/tasks', [UserTaskController::class, 'store']);
 Route::delete('/users/{user}/tasks/{task}', [UserTaskController::class, 'delete']);
+Route::put('/users/{user}/tasks/{task}/confirm', [UserTaskController::class, 'confirm']);
+

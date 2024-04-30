@@ -29,10 +29,10 @@ class CalculateTaskDuration implements ShouldQueue
 
         $duration = $openAIClient->message(
             sprintf(
-                "give a short answer in the exact formats \"X hours\" or \"X days\".
+                "give a short answer in the exact formats \"X minutes\" or \"X hours\" or \"X days\".
                 if there is not enough information, give medium long estimation that will be enough to clarify details.
                 don't add any other words or characters. make sure you follow format required.\n\n
-                how much time approximately can take next task:\n\n
+                how much time approximately can take next task(minimum is 30 minutes):\n\n
                 Title: %s\n Notes: %s",
                 $task->title,
                 $task->notes

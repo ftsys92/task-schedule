@@ -14,8 +14,6 @@ class TaskDurationCalculationCompletedListener
 
     public function handle(TaskDurationCalculationCompleted $event): void
     {
-        CalculateTaskDates::dispatch(
-            $event->taskId,
-        );
+
     }
 }

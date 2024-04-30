@@ -53,13 +53,11 @@ class Task extends Model
         return $this->belongsTo(User::class, 'assignee_id');
     }
 
-    public function scopeDouble(): Builder
+    public function scopeDoable(): Builder
     {
         return $this->whereIn('status', [
-            self::STATUS_PENDING,
             self::STATUS_CONFIRMED,
             self::STATUS_IN_PROGRESS,
-            self::STATUS_PAUSED,
         ]);
     }
 
