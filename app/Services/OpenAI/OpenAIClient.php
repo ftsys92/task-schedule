@@ -17,7 +17,7 @@ final class OpenAIClient implements OpenAIClientContract
     {
         Log::alert([$system, $message]);
         $result = $this->client->chat()->create([
-            'model' => 'gpt-4',
+            'model' => 'gpt-3.5-turbo',
             'messages' => [
                 ['role' => 'system', 'content' => $system],
                 ['role' => 'user', 'content' => $message],
