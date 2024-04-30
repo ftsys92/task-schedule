@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Task;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
+use DateInterval;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -37,8 +38,8 @@ class CalculateTaskDates implements ShouldQueue
             ->first();
 
 
-        $workingHoursStart = Carbon::parse('08:30 am');
-        $workingHoursEnd = Carbon::parse('04:30 pm');
+        $workingHoursStart = Carbon::parse('01:30 pm');
+        $workingHoursEnd = Carbon::parse('03:30 pm');
 
         // Start at the end time of the last task or 30 minutes from now
         $startAt = null !== $lastTask && $lastTask->end_at
@@ -109,7 +110,7 @@ class CalculateTaskDates implements ShouldQueue
     ): Carbon {
         // Add task duration to calculate endAt
         $endTime = $startAt->clone()->setHour($workingHoursEndHour)->setMinute($workingHoursEndMinute);
-        $endAt = $startAt->clone()->add(CarbonInterval::fromString($duration));
+        $endAt = $startAt->clone()->add(new DateInterval($duration));
 
         $diff = $endAt->diffInMinutes($endTime);
 

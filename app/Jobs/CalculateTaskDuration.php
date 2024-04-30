@@ -28,11 +28,11 @@ class CalculateTaskDuration implements ShouldQueue
         $task = Task::findOrFail($this->taskId);
 
         $duration = $openAIClient->message(
+            'give a short answer as a valid PHP DateInterval string.
+            if there is not enough information, give medium long estimation that will be enough to clarify details.
+            do not add any other words or characters. make sure you follow format required. try to do not overestimate.',
             sprintf(
-                "give a short answer in the exact formats \"X minutes\" or \"X hours\" or \"X days\".
-                if there is not enough information, give medium long estimation that will be enough to clarify details.
-                don't add any other words or characters. make sure you follow format required.\n\n
-                how much time approximately can take next task(minimum is 30 minutes):\n\n
+                "How much time approximately can take next task(minimum is 30 minutes):\n\n
                 Title: %s\n Notes: %s",
                 $task->title,
                 $task->notes
@@ -70,7 +70,7 @@ class CalculateTaskDuration implements ShouldQueue
     private static function isValidInterval(string $interval): bool
     {
         try {
-            $dateInterval = DateInterval::createFromDateString($interval);
+            $dateInterval =  new DateInterval($interval);
             return $dateInterval !== false;
         } catch (\Exception $e) {
             return false;

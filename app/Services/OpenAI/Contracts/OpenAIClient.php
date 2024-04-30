@@ -4,5 +4,5 @@ namespace App\Services\OpenAI\Contracts;
 
 interface OpenAIClient
 {
-    public function message(string $message): string;
+    public function message(string $system, string $user): string;
 }
