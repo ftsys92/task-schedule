@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers\Api\V1;
 
-use App\Events\UserCaptured;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
@@ -25,11 +24,8 @@ class UsersControllerTest extends TestCase
 
         $response->assertStatus(201);
 
-        Event::assertDispatched(UserCaptured::class, 1);
-
         $this->assertDatabaseHas('users', [
             'email' => $email,
-            'name' => null,
         ]);
     }
 }

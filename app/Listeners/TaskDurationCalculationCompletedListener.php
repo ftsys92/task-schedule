@@ -3,8 +3,6 @@
 namespace App\Listeners;
 
 use App\Events\TaskDurationCalculationCompleted;
-use App\Jobs\CalculateTaskDates;
-use Illuminate\Support\Facades\Log;
 
 class TaskDurationCalculationCompletedListener
 {

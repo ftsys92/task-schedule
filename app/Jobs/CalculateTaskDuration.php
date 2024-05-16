@@ -28,12 +28,12 @@ class CalculateTaskDuration implements ShouldQueue
         $task = Task::findOrFail($this->taskId);
 
         $duration = $openAIClient->message(
-            'give a short answer as a valid PHP DateInterval string.
-            if there is not enough information, give medium long estimation that will be enough to clarify details.
-            do not add any other words or characters. make sure you follow format required. try to do not overestimate.',
+            'The GPT estimates the time required for tasks and returns a single duration string in ISO 8601 format.
+            The responses adhere strictly to this format, ensuring consistent, accurate results.
+            The GPT does not provide additional commentary or explanations, focusing solely on producing valid duration strings for users.',
             sprintf(
-                "How much time approximately can take next task(minimum is 30 minutes):\n\n
-                Title: %s\n Notes: %s",
+                "Estimate task. Take into consederation task notes if they are not empty:\n\n
+                Task: %s\n Task notes: %s",
                 $task->title,
                 $task->notes
             ),

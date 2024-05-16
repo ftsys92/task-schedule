@@ -2,10 +2,9 @@
 
 namespace Database\Factories;
 
-use Carbon\Carbon;
+use App\Models\Task;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Task>
@@ -21,8 +20,10 @@ class TaskFactory extends Factory
     {
         return [
             'title' => fake()->title(),
-            'description' => fake()->text(),
-            'duration' => '1 hour',
+            'notes' => fake()->text(),
+            'duration' => 'PT1H',
+            'assignee_id' => User::factory()->create()->id,
+            'status' => fake()->randomElement(Task::STATUSES)
         ];
     }
 }
