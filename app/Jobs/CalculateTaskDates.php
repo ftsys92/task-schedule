@@ -41,7 +41,6 @@ class CalculateTaskDates implements ShouldQueue
             ->orderBy('end_at', 'desc')
             ->first();
 
-
         $workingHoursStart = Carbon::parse($assignee->working_hours_start);
         $workingHoursEnd = Carbon::parse($assignee->working_hours_end);
 

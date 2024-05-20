@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -30,10 +31,22 @@ class UserController
             'password' => Hash::make($password),
         ]);
 
-        return new JsonResponse([
-            'id' => $user->id,
-            'email' => $user->email,
-        ], Response::HTTP_CREATED);
+        return new JsonResponse($user, Response::HTTP_CREATED);
+    }
+
+    public function update(UpdateUserRequest $request, User $user): JsonResponse
+    {
+        $name = $request->input('name');
+        $workingHoursStart = $request->input('working_hours_start');
+        $workingHoursEnd = $request->input('working_hours_end');
+
+        $user->update([
+            'name' => $name,
+            'working_hours_start' => $workingHoursStart,
+            'working_hours_end' => $workingHoursEnd,
+        ]);
+
+        return new JsonResponse($user);
     }
 
     public function delete(User $user): JsonResponse

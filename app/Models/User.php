@@ -14,7 +14,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
+        'working_hours_start',
+        'working_hours_end',
     ];
 
     protected $hidden = [

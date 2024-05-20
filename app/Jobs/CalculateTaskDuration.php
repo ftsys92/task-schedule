@@ -30,7 +30,8 @@ class CalculateTaskDuration implements ShouldQueue
         $duration = $openAIClient->message(
             'The GPT estimates the time required for tasks and returns a single duration string in ISO 8601 format.
             The responses adhere strictly to this format, ensuring consistent, accurate results.
-            The GPT does not provide additional commentary or explanations, focusing solely on producing valid duration strings for users.',
+            The GPT does not provide additional commentary or explanations, focusing solely on producing valid duration strings for users.
+            Minimal duration is 30 minutes.',
             sprintf(
                 "Estimate task. Take into consederation task notes if they are not empty:\n\n
                 Task: %s\n Task notes: %s",
