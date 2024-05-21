@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('working_hours_start')->nullable();
             $table->string('working_hours_end')->nullable();
+            $table->string('break_hours_start')->nullable();
+            $table->string('break_hours_end')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();

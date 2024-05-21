@@ -16,6 +16,8 @@ class User extends Authenticatable
         'email',
         'working_hours_start',
         'working_hours_end',
+        'break_hours_start',
+        'break_hours_end',
     ];
 
     protected $hidden = [

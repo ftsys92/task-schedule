@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Task;
+use App\Models\User;
 use Carbon\Carbon;
 use DateInterval;
 use Illuminate\Bus\Queueable;
@@ -41,9 +42,6 @@ class CalculateTaskDates implements ShouldQueue
             ->orderBy('end_at', 'desc')
             ->first();
 
-        $workingHoursStart = Carbon::parse($assignee->working_hours_start);
-        $workingHoursEnd = Carbon::parse($assignee->working_hours_end);
-
         // Start at the end time of the last task or from now
         $startAt = null !== $lastTask && $lastTask->end_at
             ? $lastTask->end_at
@@ -52,15 +50,13 @@ class CalculateTaskDates implements ShouldQueue
         // Adjust startAt to ensure it falls within working hours and skips weekends.
         $startAt = $this->adjustForWorkingHours(
             $startAt,
-            $workingHoursStart,
-            $workingHoursEnd,
+            $assignee,
         );
 
         // Adjust endAt to ensure it falls within working hours and skips weekends.
         $endAt = $this->calculateEndTime(
             $startAt,
-            $workingHoursStart,
-            $workingHoursEnd,
+            $assignee,
             $task->duration,
         );
 
@@ -78,9 +74,14 @@ class CalculateTaskDates implements ShouldQueue
 
     private function adjustForWorkingHours(
         Carbon $time,
-        Carbon $workingHoursStart,
-        Carbon $workingHoursEnd,
+        User $assignee,
     ): Carbon {
+        $workingHoursStart = Carbon::parse($assignee->working_hours_start);
+        $workingHoursEnd = Carbon::parse($assignee->working_hours_end);
+
+        $breakHoursStart = null !== $assignee->break_hours_start ? Carbon::parse($assignee->break_hours_start) : null;
+        $breakHoursEnd =  null !== $assignee->break_hours_end ? Carbon::parse($assignee->break_hours_end) : null;
+
         // If the time falls outside working hours, adjust it.
         if (
             $time->hour < $workingHoursStart->hour ||
@@ -104,10 +105,11 @@ class CalculateTaskDates implements ShouldQueue
 
     private function calculateEndTime(
         Carbon $startAt,
-        Carbon $workingHoursStart,
-        Carbon $workingHoursEnd,
+        User $assignee,
         string $duration,
     ): Carbon {
+        $workingHoursEnd = Carbon::parse($assignee->working_hours_end);
+
         $endAt = $startAt->clone();
         $taskDurationInMinutes = $startAt->diffInMinutes($endAt->clone()->add(new DateInterval($duration)));
 
@@ -126,8 +128,7 @@ class CalculateTaskDates implements ShouldQueue
             $endAt = $endAt->addMinutes($remaining);
             $endAt = $this->adjustForWorkingHours(
                 $endAt,
-                $workingHoursStart,
-                $workingHoursEnd,
+                $assignee,
             );
         }
 

@@ -16,7 +16,9 @@ class CalculateTaskDatesTest extends TestCase
     {
         $user = User::factory()->create([
             'working_hours_start' => '09:00',
-            'working_hours_end' => '17:00',
+            'working_hours_end' => '18:00',
+            'break_hours_start' => '12:00',
+            'break_hours_end' => '13:00',
         ]);
 
         Task::factory()->create([
@@ -48,7 +50,9 @@ class CalculateTaskDatesTest extends TestCase
     {
         $user = User::factory()->create([
             'working_hours_start' => '09:00',
-            'working_hours_end' => '17:00',
+            'working_hours_end' => '18:00',
+            'break_hours_start' => '12:00',
+            'break_hours_end' => '13:00',
         ]);
 
         Task::factory()->create([
@@ -73,6 +77,6 @@ class CalculateTaskDatesTest extends TestCase
 
         self::assertEquals($user->id, $task2->assignee_id);
         self::assertEquals('2024-04-30 10:00:47', $task2->start_at);
-        self::assertEquals('2024-05-01 10:30:47', $task2->end_at);
+        self::assertEquals('2024-05-01 09:30:47', $task2->end_at);
     }
 }
