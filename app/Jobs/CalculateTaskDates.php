@@ -52,20 +52,16 @@ class CalculateTaskDates implements ShouldQueue
         // Adjust startAt to ensure it falls within working hours and skips weekends
         $startAt = $this->adjustForWorkingHours(
             $startAt,
-            $workingHoursStart->hour,
-            $workingHoursStart->minute,
-            $workingHoursEnd->hour,
-            $workingHoursEnd->minute,
+            $workingHoursStart,
+            $workingHoursEnd,
         );
 
         // Adjust endAt to ensure it falls within working hours and skips weekends
         $endAt = $this->calculateEndTime(
             $startAt,
+            $workingHoursStart,
+            $workingHoursEnd,
             $task->duration,
-            $workingHoursStart->hour,
-            $workingHoursStart->minute,
-            $workingHoursEnd->hour,
-            $workingHoursEnd->minute,
         );
 
         $task->start_at = $startAt;
@@ -82,17 +78,15 @@ class CalculateTaskDates implements ShouldQueue
 
     private function adjustForWorkingHours(
         Carbon $time,
-        int $workingHoursStartHour,
-        int $workingHoursStartMinute,
-        int $workingHoursEndHour,
-        int $workingHoursEndMinute,
+        Carbon $workingHoursStart,
+        Carbon $workingHoursEnd,
     ): Carbon {
         // If the time falls outside working hours, adjust it
-        if ($time->hour < $workingHoursStartHour || ($time->hour === $workingHoursStartHour && $time->minute < $workingHoursStartMinute)) {
-            $time->setHour($workingHoursStartHour)->setMinute($workingHoursStartMinute);
-        } elseif ($time->hour > $workingHoursEndHour || ($time->hour === $workingHoursEndHour && $time->minute >= $workingHoursEndMinute)) {
+        if ($time->hour < $workingHoursStart->hour || ($time->hour === $workingHoursStart->hour && $time->minute < $workingHoursStart->minute)) {
+            $time->setHour($workingHoursStart->hour)->setMinute($workingHoursStart->minute);
+        } elseif ($time->hour > $workingHoursEnd->hour || ($time->hour === $workingHoursEnd->hour && $time->minute >= $workingHoursEnd->minute)) {
             // Move to the next working day and reset to start of working hours
-            $time = $time->addDay()->setHour($workingHoursStartHour)->setMinute($workingHoursStartMinute);
+            $time = $time->addDay()->setHour($workingHoursStart->hour)->setMinute($workingHoursStart->minute);
         }
 
         while ($time->isWeekend()) {
@@ -104,17 +98,15 @@ class CalculateTaskDates implements ShouldQueue
 
     private function calculateEndTime(
         Carbon $startAt,
+        Carbon $workingHoursStart,
+        Carbon $workingHoursEnd,
         string $duration,
-        int $workingHoursStartHour,
-        int $workingHoursStartMinute,
-        int $workingHoursEndHour,
-        int $workingHoursEndMinute,
     ): Carbon {
         $endAt = $startAt->clone();
         $taskDurationInMinutes = $startAt->diffInMinutes($endAt->clone()->add(new DateInterval($duration)));
 
         while ($taskDurationInMinutes >= 0) {
-            $endTime = $endAt->clone()->setHour($workingHoursEndHour)->setMinute($workingHoursEndMinute);
+            $endTime = $endAt->clone()->setHour($workingHoursEnd->hour)->setMinute($workingHoursEnd->minute);
             $remaining = $endAt->diffInMinutes($endTime);
             $taskDurationInMinutes -= $remaining;
 
@@ -126,10 +118,8 @@ class CalculateTaskDates implements ShouldQueue
 
             $endAt = $this->adjustForWorkingHours(
                 $endAt,
-                $workingHoursStartHour,
-                $workingHoursStartMinute,
-                $workingHoursEndHour,
-                $workingHoursEndMinute,
+                $workingHoursStart,
+                $workingHoursEnd,
             );
         }
 
