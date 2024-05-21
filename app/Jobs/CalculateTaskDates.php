@@ -82,9 +82,15 @@ class CalculateTaskDates implements ShouldQueue
         Carbon $workingHoursEnd,
     ): Carbon {
         // If the time falls outside working hours, adjust it
-        if ($time->hour < $workingHoursStart->hour || ($time->hour === $workingHoursStart->hour && $time->minute < $workingHoursStart->minute)) {
+        if (
+            $time->hour < $workingHoursStart->hour ||
+            ($time->hour === $workingHoursStart->hour && $time->minute < $workingHoursStart->minute)
+        ) {
             $time->setHour($workingHoursStart->hour)->setMinute($workingHoursStart->minute);
-        } elseif ($time->hour > $workingHoursEnd->hour || ($time->hour === $workingHoursEnd->hour && $time->minute >= $workingHoursEnd->minute)) {
+        } elseif (
+            $time->hour > $workingHoursEnd->hour ||
+            ($time->hour === $workingHoursEnd->hour && $time->minute >= $workingHoursEnd->minute)
+        ) {
             // Move to the next working day and reset to start of working hours
             $time = $time->addDay()->setHour($workingHoursStart->hour)->setMinute($workingHoursStart->minute);
         }
