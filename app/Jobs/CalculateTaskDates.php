@@ -95,7 +95,6 @@ class CalculateTaskDates implements ShouldQueue
             $time = $time->addDay()->setHour($workingHoursStartHour)->setMinute($workingHoursStartMinute);
         }
 
-        // Skip weekends when adjusting for the next working day
         while ($time->isWeekend()) {
             $time = $time->addDay();
         }
@@ -111,20 +110,27 @@ class CalculateTaskDates implements ShouldQueue
         int $workingHoursEndHour,
         int $workingHoursEndMinute,
     ): Carbon {
-        // Add task duration to calculate endAt
-        $endTime = $startAt->clone()->setHour($workingHoursEndHour)->setMinute($workingHoursEndMinute);
-        $endAt = $startAt->clone()->add(new DateInterval($duration));
+        $endAt = $startAt->clone();
+        $taskDurationInMinutes = $startAt->diffInMinutes($endAt->clone()->add(new DateInterval($duration)));
 
-        $diff = $endAt->diffInMinutes($endTime);
+        while ($taskDurationInMinutes >= 0) {
+            $endTime = $endAt->clone()->setHour($workingHoursEndHour)->setMinute($workingHoursEndMinute);
+            $remaining = $endAt->diffInMinutes($endTime);
+            $taskDurationInMinutes -= $remaining;
 
-        if ($diff < 0) {
-            $endAt = $endAt->addDay()->setHour($workingHoursStartHour)->setMinute($workingHoursStartMinute);
-            $endAt = $endAt->addMinutes(abs($diff));
-        }
+            if ($taskDurationInMinutes < 0) {
+                $remaining = $remaining + $taskDurationInMinutes;
+            }
 
-        // Skip weekends when adjusting for the next working day
-        while ($endAt->isWeekend()) {
-            $endAt = $endAt->addDay();
+            $endAt = $endAt->addMinutes($remaining);
+
+            $endAt = $this->adjustForWorkingHours(
+                $endAt,
+                $workingHoursStartHour,
+                $workingHoursStartMinute,
+                $workingHoursEndHour,
+                $workingHoursEndMinute,
+            );
         }
 
         return $endAt;
