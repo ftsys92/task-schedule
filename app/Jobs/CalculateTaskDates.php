@@ -49,14 +49,14 @@ class CalculateTaskDates implements ShouldQueue
             ? $lastTask->end_at
             : Carbon::now();
 
-        // Adjust startAt to ensure it falls within working hours and skips weekends
+        // Adjust startAt to ensure it falls within working hours and skips weekends.
         $startAt = $this->adjustForWorkingHours(
             $startAt,
             $workingHoursStart,
             $workingHoursEnd,
         );
 
-        // Adjust endAt to ensure it falls within working hours and skips weekends
+        // Adjust endAt to ensure it falls within working hours and skips weekends.
         $endAt = $this->calculateEndTime(
             $startAt,
             $workingHoursStart,
@@ -81,7 +81,7 @@ class CalculateTaskDates implements ShouldQueue
         Carbon $workingHoursStart,
         Carbon $workingHoursEnd,
     ): Carbon {
-        // If the time falls outside working hours, adjust it
+        // If the time falls outside working hours, adjust it.
         if (
             $time->hour < $workingHoursStart->hour ||
             ($time->hour === $workingHoursStart->hour && $time->minute < $workingHoursStart->minute)
@@ -91,7 +91,7 @@ class CalculateTaskDates implements ShouldQueue
             $time->hour > $workingHoursEnd->hour ||
             ($time->hour === $workingHoursEnd->hour && $time->minute >= $workingHoursEnd->minute)
         ) {
-            // Move to the next working day and reset to start of working hours
+            // Move to the next working day and reset to start of working hours.
             $time = $time->addDay()->setHour($workingHoursStart->hour)->setMinute($workingHoursStart->minute);
         }
 
@@ -111,17 +111,19 @@ class CalculateTaskDates implements ShouldQueue
         $endAt = $startAt->clone();
         $taskDurationInMinutes = $startAt->diffInMinutes($endAt->clone()->add(new DateInterval($duration)));
 
+        // Calculate remaining time in minutes for working day and adjust end date.
         while ($taskDurationInMinutes >= 0) {
             $endTime = $endAt->clone()->setHour($workingHoursEnd->hour)->setMinute($workingHoursEnd->minute);
             $remaining = $endAt->diffInMinutes($endTime);
-            $taskDurationInMinutes -= $remaining;
 
+            $taskDurationInMinutes -= $remaining;
             if ($taskDurationInMinutes < 0) {
+                // If remaining greather that time minutes left to finish task then calculate real remainign.
                 $remaining = $remaining + $taskDurationInMinutes;
             }
 
+            // Add remainign and move to next day if needed.
             $endAt = $endAt->addMinutes($remaining);
-
             $endAt = $this->adjustForWorkingHours(
                 $endAt,
                 $workingHoursStart,
