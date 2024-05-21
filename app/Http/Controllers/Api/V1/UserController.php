@@ -26,10 +26,10 @@ class UserController
         $email = $request->input('email');
         $password = $request->input('password');
 
-        $user = User::create([
-            'email' => $email,
-            'password' => Hash::make($password),
-        ]);
+        $user = new User();
+        $user->email = $email;
+        $user->password =  Hash::make($password);
+        $user->save();
 
         return new JsonResponse($user, Response::HTTP_CREATED);
     }
