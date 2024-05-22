@@ -65,7 +65,7 @@ class DatesCalculationTest extends TestCase
     }
 
     #[DataProvider('provides8HoursWorkAnd1HourLunchTestSet')]
-    public function test_calculates_start_date_and_end_date_for_a_task(array $testSet): void
+    public function test_calculates_start_date_and_end_date_based_on_duration_and_timeline(array $testSet): void
     {
         $timeline = $testSet['timeline'];
 
