@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Jobs;
+namespace Tests\Unit;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
