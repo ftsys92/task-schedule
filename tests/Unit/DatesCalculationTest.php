@@ -5,10 +5,12 @@ namespace Tests\Feature\Jobs;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class DatesCalculationTest extends TestCase
 {
-    public function test_calculates_start_date_and_end_date_for_a_task(): void
+
+    public static function provides8HoursWorkAnd1HourLunchTestSet(): array
     {
         $timeline = [
             [
@@ -21,14 +23,60 @@ class DatesCalculationTest extends TestCase
             ],
         ];
 
-        $duration = new CarbonInterval('PT10H');
-        $startDate = Carbon::parse('2024-05-23 12:25');
+        return [
+            [
+                [
+                    'date' => '2024-05-22 17:45',
+                    'duration' => 'PT5H25M',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-22 17:45',
+                    'expected_end_date' => '2024-05-23 15:10',
+                ],
+                [
+                    'date' => '2024-05-22 17:50',
+                    'duration' => 'PT5H25M',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-23 09:00',
+                    'expected_end_date' => '2024-05-23 15:25',
+                ],
+                [
+                    'date' => '2024-05-23 09:25',
+                    'duration' => 'PT5H25M',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-23 09:25',
+                    'expected_end_date' => '2024-05-23 15:50',
+                ],
+                [
+                    'date' => '2024-05-23 12:25',
+                    'duration' => 'PT10H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-23 13:00',
+                    'expected_end_date' => '2024-05-24 15:00',
+                ],
+                [
+                    'date' => '2024-05-23 13:20',
+                    'duration' => 'PT10H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-23 13:20',
+                    'expected_end_date' => '2024-05-23 15:20',
+                ]
+            ],
+        ];
+    }
+
+    #[DataProvider('provides8HoursWorkAnd1HourLunchTestSet')]
+    public function test_calculates_start_date_and_end_date_for_a_task(array $testSet): void
+    {
+        $timeline = $testSet['timeline'];
+
+        $duration = new CarbonInterval($testSet['duration']);
+        $startDate = Carbon::parse($testSet['date']);
 
         $adjustedStartDate = $this->adjustStartDate($startDate, $timeline);
         $endDate = $this->calculateEndDate($adjustedStartDate, $duration, $timeline);
 
-        self::assertEquals('2024-05-23 13:00', $adjustedStartDate->format('Y-m-d H:i'));
-        self::assertEquals('2024-05-24 15:00', $endDate->format('Y-m-d H:i'));
+        self::assertEquals($testSet['expected_start_date'], $adjustedStartDate->format('Y-m-d H:i'));
+        self::assertEquals($testSet['expected_end_date'], $endDate->format('Y-m-d H:i'));
     }
 
     /**
@@ -45,7 +93,7 @@ class DatesCalculationTest extends TestCase
             $start = Carbon::createFromTimeString($time['start'])->setDate($date->year, $date->month, $date->day);
             $end = Carbon::createFromTimeString($time['end'])->setDate($date->year, $date->month, $date->day);
 
-            if ($date->between($start, $end, true)) {
+            if ($date->between($start, $end, false) && $date->diffInMinutes($end) >= 15) {
                 return $date; // Start date is within this period
             } elseif ($date->lessThan($start)) {
                 return $start; // Adjust start date to the beginning of this period
