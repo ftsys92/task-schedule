@@ -72,7 +72,7 @@ class DatesCalculationTest extends TestCase
         $duration = new CarbonInterval($testSet['duration']);
         $startDate = Carbon::parse($testSet['date']);
 
-        $adjustedStartDate = $this->adjustStartDate($startDate, $timeline);
+        $adjustedStartDate = $this->calculateStartDate($startDate, $timeline);
         $endDate = $this->calculateEndDate($adjustedStartDate, $duration, $timeline);
 
         self::assertEquals($testSet['expected_start_date'], $adjustedStartDate->format('Y-m-d H:i'));
@@ -86,7 +86,7 @@ class DatesCalculationTest extends TestCase
      * @param array $timeline
      * @return Carbon
      */
-    private function adjustStartDate(Carbon $startDate, $timeline): Carbon
+    private function calculateStartDate(Carbon $startDate, $timeline): Carbon
     {
         $date = $startDate->copy();
         foreach ($timeline as $time) {
