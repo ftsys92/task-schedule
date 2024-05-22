@@ -59,7 +59,7 @@ class DatesCalculationTest extends TestCase
                     'timeline' => $timeline,
                     'expected_start_date' => '2024-05-23 13:20',
                     'expected_end_date' => '2024-05-23 15:20',
-                ]
+                ],
             ],
         ];
     }
@@ -80,7 +80,7 @@ class DatesCalculationTest extends TestCase
     }
 
     /**
-     * Adjusts the start date to fit within the working periods
+     * Adjusts the start date to fit within the working periods.
      *
      * @param Carbon $startDate
      * @param array $timeline
@@ -94,20 +94,20 @@ class DatesCalculationTest extends TestCase
             $end = Carbon::createFromTimeString($time['end'])->setDate($date->year, $date->month, $date->day);
 
             if ($date->between($start, $end, false) && $date->diffInMinutes($end) >= 15) {
-                return $date; // Start date is within this period
+                return $date; // Start date is within this period.
             } elseif ($date->lessThan($start)) {
-                return $start; // Adjust start date to the beginning of this period
+                return $start; // Adjust start date to the beginning of this period.
             }
         }
 
-        // If the start date is after all working periods, move to the next day's first period
+        // If the start date is after all working periods, move to the next day's first period.
         $nextDay = $date->addDay()->startOfDay();
         $firstPeriod = $timeline[0];
         return Carbon::createFromTimeString($firstPeriod['start'])->setDate($nextDay->year, $nextDay->month, $nextDay->day);
     }
 
     /**
-     * Calculates the end date based on the start date, duration, and working periods
+     * Calculates the end date based on the start date, duration, and working periods.
      *
      * @param Carbon $startDate
      * @param CarbonInterval $duration
@@ -144,7 +144,7 @@ class DatesCalculationTest extends TestCase
                 }
             }
 
-            // Move to the next day's first period if there's remaining duration
+            // Move to the next day's first period if there's remaining duration.
             $date->addDay()->startOfDay();
             $endDate = Carbon::createFromTimeString($timeline[0]['start'])->setDate($date->year, $date->month, $date->day);
         }
