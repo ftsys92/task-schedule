@@ -1,89 +1,30 @@
 <?php
 
-namespace Tests\Unit;
+namespace App\Services\Tasks;
 
+use App\Services\Tasks\Contracts\TaskDatesCalculator as TaskDatesCalculatorContract;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\DataProvider;
+use Carbon\CarbonPeriod;
+use DateTime;
+use DateInterval;
+use DatePeriod;
 
-class DatesCalculationTest extends TestCase
+final class TaskDatesCalculator implements TaskDatesCalculatorContract
 {
-
-    public static function provides8HoursWorkAnd1HourLunchTestSet(): array
+    public function calculateDates(DateTime $fromDate, DateInterval $duration, array $timeline): DatePeriod
     {
-        $timeline = [
-            [
-                'start' => '09:00',
-                'end' => '12:00',
-            ],
-            [
-                'start' => '13:00',
-                'end' => '18:00',
-            ],
-        ];
+        $start = $this->calculateStartDate($fromDate, $timeline);
+        $end = $this->calculateEndDate($start, $duration, $timeline);
 
-        return [
-            [
-                [
-                    'date' => '2024-05-22 17:45',
-                    'duration' => 'PT5H25M',
-                    'timeline' => $timeline,
-                    'expected_start_date' => '2024-05-22 17:45',
-                    'expected_end_date' => '2024-05-23 15:10',
-                ],
-                [
-                    'date' => '2024-05-22 17:50',
-                    'duration' => 'PT5H25M',
-                    'timeline' => $timeline,
-                    'expected_start_date' => '2024-05-23 09:00',
-                    'expected_end_date' => '2024-05-23 15:25',
-                ],
-                [
-                    'date' => '2024-05-23 09:25',
-                    'duration' => 'PT5H25M',
-                    'timeline' => $timeline,
-                    'expected_start_date' => '2024-05-23 09:25',
-                    'expected_end_date' => '2024-05-23 15:50',
-                ],
-                [
-                    'date' => '2024-05-23 12:25',
-                    'duration' => 'PT10H',
-                    'timeline' => $timeline,
-                    'expected_start_date' => '2024-05-23 13:00',
-                    'expected_end_date' => '2024-05-24 15:00',
-                ],
-                [
-                    'date' => '2024-05-23 13:20',
-                    'duration' => 'PT10H',
-                    'timeline' => $timeline,
-                    'expected_start_date' => '2024-05-23 13:20',
-                    'expected_end_date' => '2024-05-23 15:20',
-                ],
-            ],
-        ];
-    }
-
-    #[DataProvider('provides8HoursWorkAnd1HourLunchTestSet')]
-    public function test_calculates_start_date_and_end_date_based_on_duration_and_timeline(array $testSet): void
-    {
-        $timeline = $testSet['timeline'];
-
-        $duration = new CarbonInterval($testSet['duration']);
-        $startDate = Carbon::parse($testSet['date']);
-
-        $adjustedStartDate = $this->calculateStartDate($startDate, $timeline);
-        $endDate = $this->calculateEndDate($adjustedStartDate, $duration, $timeline);
-
-        self::assertEquals($testSet['expected_start_date'], $adjustedStartDate->format('Y-m-d H:i'));
-        self::assertEquals($testSet['expected_end_date'], $endDate->format('Y-m-d H:i'));
+        return CarbonPeriod::create($start, $end);
     }
 
     /**
      * Adjusts the start date to fit within the working periods.
      *
      * @param Carbon $startDate
-     * @param array $timeline
+     * @param list<array{start: string, end: string}> $timeline
      *
      * @return Carbon
      */
@@ -112,18 +53,17 @@ class DatesCalculationTest extends TestCase
      *
      * @param Carbon $startDate
      * @param CarbonInterval $duration
-     * @param array $timeline
+     * @param list<array{start: string, end: string}> $timeline
      *
      * @return Carbon
      */
     private function calculateEndDate(Carbon $startDate, CarbonInterval $duration, array $timeline): Carbon
     {
         $remainingDuration = $duration->copy();
-        $date = $startDate->clone();
+        $date = $startDate->copy();
         $endDate = $startDate->copy();
 
         while ($remainingDuration->totalMinutes > 0) {
-
             foreach ($timeline as $time) {
                 $start = Carbon::createFromTimeString($time['start'])->setDate($date->year, $date->month, $date->day);
                 $end = Carbon::createFromTimeString($time['end'])->setDate($date->year, $date->month, $date->day);
