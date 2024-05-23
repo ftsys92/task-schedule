@@ -45,6 +45,7 @@ final class TaskDatesCalculator implements TaskDatesCalculatorContract
         // If the start date is after all working periods, move to the next day's first period.
         $nextDay = $date->addDay()->startOfDay();
         $firstPeriod = $timeline[0];
+
         return Carbon::createFromTimeString($firstPeriod['start'])->setDate($nextDay->year, $nextDay->month, $nextDay->day);
     }
 
