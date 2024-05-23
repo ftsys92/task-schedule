@@ -15,6 +15,5 @@ class TaskDurationCalculationFailedListener
 
     public function handle(TaskDurationCalculationFailed $event): void
     {
-        Log::info('TaskDurationCalculationFailedListener');
     }
 }

@@ -19,6 +19,5 @@ class TaskDurationCalculationCompleted
         public int $taskId,
         public string $duration
     ) {
-        Log::info('TaskDurationCalculationCompleted');
     }
 }

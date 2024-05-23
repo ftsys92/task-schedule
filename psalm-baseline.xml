@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="5.24.0@462c80e31c34e58cc4f750c656be3927e80e550e">
+  <file src="app/Jobs/CalculateTaskDuration.php">
+    <RedundantCondition>
+      <code><![CDATA[$dateInterval !== false]]></code>
+    </RedundantCondition>
+  </file>
+  <file src="app/Services/Tasks/TaskDatesCalculator.php">
+    <MissingDependency>
+      <code><![CDATA[CarbonPeriod]]></code>
+    </MissingDependency>
+  </file>
+</files>

@@ -6,10 +6,10 @@ namespace Tests\Unit;
 
 use App\Services\Tasks\TaskDatesCalculator;
 use Carbon\Carbon;
-use Carbon\CarbonInterval;
 use DateInterval;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use InvalidArgumentException;
 
 class TaskDatesCalculatorTest extends TestCase
 {
@@ -108,6 +108,33 @@ class TaskDatesCalculatorTest extends TestCase
                     'expected_end_date' => '2024-05-27 14:00',
                 ],
             ],
+            [
+                [
+                    'date' => '2024-05-25 00:00',
+                    'duration' => 'PT4H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-27 09:00',
+                    'expected_end_date' => '2024-05-27 14:00',
+                ],
+            ],
+            [
+                [
+                    'date' => '2024-05-27 00:00',
+                    'duration' => 'PT4H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-27 09:00',
+                    'expected_end_date' => '2024-05-27 14:00',
+                ],
+            ],
+            [
+                [
+                    'date' => '2024-05-27 23:59',
+                    'duration' => 'PT4H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-28 09:00',
+                    'expected_end_date' => '2024-05-28 14:00',
+                ],
+            ],
         ];
     }
 
@@ -124,5 +151,56 @@ class TaskDatesCalculatorTest extends TestCase
 
         self::assertEquals($testSet['expected_start_date'], $dates->getStartDate()->format('Y-m-d H:i'));
         self::assertEquals($testSet['expected_end_date'], $dates->getEndDate()->format('Y-m-d H:i'));
+    }
+
+    public static function providesInvalidTimelineTestSet(): array
+    {
+        return [
+            [
+                [
+                    'start' => '1111',
+                    'end' => '2222',
+                ],
+            ],
+            [
+                [],
+            ],
+            [
+                [
+                    [
+                        'start' => '1111',
+                        'end' => '2222',
+                    ],
+                ],
+            ],
+            [
+                [
+                    [
+                        'start' => '+13',
+                        'end' => '-22',
+                    ],
+                ],
+            ],
+            [
+                [
+                    [
+                        'start' => '+13:13',
+                        'end' => '2:00',
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    #[DataProvider('providesInvalidTimelineTestSet')]
+    public function test_thorws_exception_for_invalid_timeline(array $timeline): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $duration = new DateInterval('PT4H');
+        $startDate = Carbon::parse('2024-05-25 17:45');
+
+        $calculator = new TaskDatesCalculator();
+        $calculator->calculateDates($startDate, $duration, $timeline);
     }
 }

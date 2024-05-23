@@ -16,7 +16,6 @@ class TaskCreatedListener
 
     public function handle(TaskCreated $event): void
     {
-        Log::info('TaskCreatedListener');
         CalculateTaskDuration::dispatch($event->taskId);
     }
 }

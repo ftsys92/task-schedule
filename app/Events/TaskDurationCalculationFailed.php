@@ -18,6 +18,5 @@ class TaskDurationCalculationFailed
         public DateTimeImmutable $at,
         public int $taskId
     ) {
-        Log::info('TaskDurationCalculationFailed');
     }
 }

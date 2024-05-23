@@ -19,6 +19,5 @@ class TaskConfirmed
         public int $userId,
         public int $taskId
     ) {
-        Log::info('TaskConfirmed');
     }
 }

@@ -69,11 +69,5 @@ class CalculateTaskDates implements ShouldQueue
         $task->start_at = $dates->getStartDate();
         $task->end_at = $dates->getEndDate();
         $task->save();
-
-        Log::info([
-            'message' => sprintf('"%s" job has been handled', self::class),
-            'queue' => $this->queue,
-            'task_id' => $task->id,
-        ]);
     }
 }

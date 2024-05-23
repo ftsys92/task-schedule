@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b5caf748acd22227bfd3289b8d333f9",
+    "content-hash": "e549fb46514048109b3a3a10db483dc1",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7925,6 +7925,41 @@
                 }
             ],
             "time": "2024-04-24T06:34:25+00:00"
+        },
+        {
+            "name": "psalm/phar",
+            "version": "5.24.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/psalm/phar.git",
+                "reference": "6ca1cbe47bbda0759b22ffe555594b547ff8351b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/psalm/phar/zipball/6ca1cbe47bbda0759b22ffe555594b547ff8351b",
+                "reference": "6ca1cbe47bbda0759b22ffe555594b547ff8351b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1 || ^8.0"
+            },
+            "conflict": {
+                "vimeo/psalm": "*"
+            },
+            "bin": [
+                "psalm.phar"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Composer-based Psalm Phar",
+            "support": {
+                "issues": "https://github.com/psalm/phar/issues",
+                "source": "https://github.com/psalm/phar/tree/5.24.0"
+            },
+            "time": "2024-05-01T20:28:41+00:00"
         },
         {
             "name": "sebastian/cli-parser",

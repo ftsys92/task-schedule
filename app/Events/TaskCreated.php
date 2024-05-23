@@ -19,6 +19,5 @@ class TaskCreated
         public int $userId,
         public int $taskId
     ) {
-        Log::info('TaskCreated');
     }
 }

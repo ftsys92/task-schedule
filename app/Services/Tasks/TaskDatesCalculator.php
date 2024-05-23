@@ -11,22 +11,50 @@ use Carbon\CarbonPeriod;
 use DateTime;
 use DateInterval;
 use DatePeriod;
+use InvalidArgumentException;
 
 final class TaskDatesCalculator implements TaskDatesCalculatorContract
 {
     public function calculateDates(DateTime $fromDate, DateInterval $duration, array $timeline): DatePeriod
     {
-        $start = $this->calculateStartDate($fromDate, $timeline);
+        if (!$this->validateTimeline($timeline)) {
+            throw new InvalidArgumentException(
+                sprintf('%s(): Argument #3 ($timeline) is not valid', __METHOD__),
+            );
+        }
+
+        $start = $this->calculateStartDate(new Carbon($fromDate), $timeline);
         $end = $this->calculateEndDate($start, new CarbonInterval($duration), $timeline);
 
         return CarbonPeriod::create($start, $end);
     }
 
     /**
+     * @param list<array{start: non-empty-string, end: non-empty-string}> $timeline
+     */
+    private function validateTimeline(array $timeline): bool
+    {
+        if ([] === $timeline) {
+            return false;
+        }
+
+        foreach ($timeline as $time) {
+            if (!is_array($time)) {
+                return false;
+            }
+
+            return preg_match('/^([01]\d|2[0-3]):([0-5]\d)$/', $time['start']) === 1 &&
+                preg_match('/^([01]\d|2[0-3]):([0-5]\d)$/', $time['end']) === 1;
+        }
+
+        return true;
+    }
+
+    /**
      * Adjusts the start date to fit within the working periods.
      *
      * @param Carbon $startDate
-     * @param list<array{start: string, end: string}> $timeline
+     * @param list<array{start: non-empty-string, end: non-empty-string}> $timeline
      *
      * @return Carbon
      */
@@ -61,7 +89,7 @@ final class TaskDatesCalculator implements TaskDatesCalculatorContract
      *
      * @param Carbon $startDate
      * @param CarbonInterval $duration
-     * @param list<array{start: string, end: string}> $timeline
+     * @param list<array{start: non-empty-string, end: non-empty-string}> $timeline
      *
      * @return Carbon
      */

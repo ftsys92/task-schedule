@@ -42,7 +42,7 @@ class CalculateTaskDuration implements ShouldQueue
             ),
         );
 
-        $isValid = self::isValidInterval($duration);
+        $isValid = is_string($duration) && self::isValidInterval($duration);
 
         if (!$isValid) {
             event(new TaskDurationCalculationFailed(
@@ -62,12 +62,6 @@ class CalculateTaskDuration implements ShouldQueue
             $this->taskId,
             $duration
         ));
-
-        Log::info([
-            'message' => sprintf('"%s" job has been handled', self::class),
-            'queue' => $this->queue,
-            'task_id' => $task->id,
-        ]);
     }
 
     private static function isValidInterval(string $interval): bool
