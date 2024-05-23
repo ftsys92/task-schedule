@@ -14,6 +14,8 @@ class UpdateUserRequest extends FormRequest
             'name' => ['nullable', 'string', 'max:255'],
             'working_hours_start' => ['nullable', 'string'],
             'working_hours_end' => ['nullable', 'string'],
+            'break_hours_start' => ['nullable', 'string'],
+            'break_hours_end' => ['nullable', 'string'],
         ];
     }
 }
