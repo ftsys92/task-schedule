@@ -193,7 +193,7 @@ class TaskDatesCalculatorTest extends TestCase
     }
 
     #[DataProvider('providesInvalidTimelineTestSet')]
-    public function test_thorws_exception_for_invalid_timeline(array $timeline): void
+    public function test_throws_exception_for_invalid_timeline(array $timeline): void
     {
         $this->expectException(InvalidArgumentException::class);
 
