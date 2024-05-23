@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\OpenAI;
 
 use App\Services\OpenAI\Contracts\OpenAIClient as OpenAIClientContract;

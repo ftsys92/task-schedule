@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\Events\TaskDurationCalculationCompleted;
@@ -19,7 +21,7 @@ class CalculateTaskDuration implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(public string $taskId)
+    public function __construct(public int $taskId)
     {
     }
 
