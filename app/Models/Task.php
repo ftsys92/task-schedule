@@ -52,8 +52,7 @@ class Task extends Model
     ];
 
     protected $appends = [
-        'approximate_duration_for_humans',
-        'calculated_duration_for_humans'
+        'duration_for_humans',
     ];
 
     public function assignee(): BelongsTo
@@ -69,21 +68,12 @@ class Task extends Model
         ]);
     }
 
-    public function getApproximateDurationForHumansAttribute(): string|null
+    public function getDurationForHumansAttribute(): string|null
     {
         if (null === $this->duration) {
             return null;
         }
 
         return (new CarbonInterval($this->duration))->forHumans();
-    }
-
-    public function getCalculatedDurationForHumansAttribute(): string|null
-    {
-        if (null === $this->start_at || null === $this->end_at) {
-            return null;
-        }
-
-        return  $this->end_at->diffAsCarbonInterval($this->start_at)->forHumans();
     }
 }
