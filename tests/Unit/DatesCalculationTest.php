@@ -34,6 +34,8 @@ class DatesCalculationTest extends TestCase
                     'expected_start_date' => '2024-05-22 17:45',
                     'expected_end_date' => '2024-05-23 15:10',
                 ],
+            ],
+            [
                 [
                     'date' => '2024-05-22 17:50',
                     'duration' => 'PT5H25M',
@@ -41,6 +43,8 @@ class DatesCalculationTest extends TestCase
                     'expected_start_date' => '2024-05-23 09:00',
                     'expected_end_date' => '2024-05-23 15:25',
                 ],
+            ],
+            [
                 [
                     'date' => '2024-05-23 09:25',
                     'duration' => 'PT5H25M',
@@ -48,6 +52,8 @@ class DatesCalculationTest extends TestCase
                     'expected_start_date' => '2024-05-23 09:25',
                     'expected_end_date' => '2024-05-23 15:50',
                 ],
+            ],
+            [
                 [
                     'date' => '2024-05-23 12:25',
                     'duration' => 'PT10H',
@@ -55,12 +61,14 @@ class DatesCalculationTest extends TestCase
                     'expected_start_date' => '2024-05-23 13:00',
                     'expected_end_date' => '2024-05-24 15:00',
                 ],
+            ],
+            [
                 [
                     'date' => '2024-05-23 13:20',
                     'duration' => 'PT10H',
                     'timeline' => $timeline,
                     'expected_start_date' => '2024-05-23 13:20',
-                    'expected_end_date' => '2024-05-23 15:20',
+                    'expected_end_date' => '2024-05-24 15:20',
                 ],
             ],
         ];
