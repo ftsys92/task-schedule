@@ -80,6 +80,33 @@ class DatesCalculationTest extends TestCase
                     'expected_end_date' => '2024-05-27 10:00',
                 ],
             ],
+            [
+                [
+                    'date' => '2024-05-25 09:00',
+                    'duration' => 'PT4H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-27 09:00',
+                    'expected_end_date' => '2024-05-27 14:00',
+                ],
+            ],
+            [
+                [
+                    'date' => '2024-05-25 18:00',
+                    'duration' => 'PT4H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-27 09:00',
+                    'expected_end_date' => '2024-05-27 14:00',
+                ],
+            ],
+            [
+                [
+                    'date' => '2024-05-25 17:45',
+                    'duration' => 'PT4H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-27 09:00',
+                    'expected_end_date' => '2024-05-27 14:00',
+                ],
+            ],
         ];
     }
 
@@ -102,19 +129,24 @@ class DatesCalculationTest extends TestCase
      * Adjusts the start date to fit within the working periods.
      *
      * @param Carbon $startDate
-     * @param array $timeline
+     * @param list<array{start: string, end: string}> $timeline
      *
      * @return Carbon
      */
     private function calculateStartDate(Carbon $startDate, array $timeline): Carbon
     {
         $date = $startDate->copy();
-        foreach ($timeline as $time) {
-            $start = Carbon::createFromTimeString($time['start'])->setDate($date->year, $date->month, $date->day);
-            $end = Carbon::createFromTimeString($time['end'])->setDate($date->year, $date->month, $date->day);
 
-            if ($date->between($start, $end, false) && $date->diffInMinutes($end) >= 15) {
-                return $date; // Start date is within this period.
+        foreach ($timeline as $time) {
+            $start = $this->adjustWeekends(
+                Carbon::createFromTimeString($time['start'])->setDate($date->year, $date->month, $date->day)
+            );
+            $end = $this->adjustWeekends(
+                Carbon::createFromTimeString($time['end'])->setDate($date->year, $date->month, $date->day)
+            );
+
+            if ($date->between($start, $end, true) && $date->diffInMinutes($end) >= 15) {
+                return $this->adjustWeekends($date); // Start date is within this period.
             } elseif ($date->lessThan($start)) {
                 return $start; // Adjust start date to the beginning of this period.
             }
@@ -124,11 +156,7 @@ class DatesCalculationTest extends TestCase
         $nextDay = $date->addDay()->startOfDay();
         $startDate = Carbon::createFromTimeString($timeline[0]['start'])->setDate($nextDay->year, $nextDay->month, $nextDay->day);
 
-        while ($startDate->isWeekend()) {
-            $startDate->addDay();
-        }
-
-        return $startDate;
+        return $this->adjustWeekends($startDate);
     }
 
     /**
@@ -136,21 +164,24 @@ class DatesCalculationTest extends TestCase
      *
      * @param Carbon $startDate
      * @param CarbonInterval $duration
-     * @param array $timeline
+     * @param list<array{start: string, end: string}> $timeline
      *
      * @return Carbon
      */
     private function calculateEndDate(Carbon $startDate, CarbonInterval $duration, array $timeline): Carbon
     {
         $remainingDuration = $duration->copy();
-        $date = $startDate->clone();
+        $date = $startDate->copy();
         $endDate = $startDate->copy();
 
         while ($remainingDuration->totalMinutes > 0) {
-
             foreach ($timeline as $time) {
-                $start = Carbon::createFromTimeString($time['start'])->setDate($date->year, $date->month, $date->day);
-                $end = Carbon::createFromTimeString($time['end'])->setDate($date->year, $date->month, $date->day);
+                $start = $this->adjustWeekends(
+                    Carbon::createFromTimeString($time['start'])->setDate($date->year, $date->month, $date->day)
+                );
+                $end = $this->adjustWeekends(
+                    Carbon::createFromTimeString($time['end'])->setDate($date->year, $date->month, $date->day)
+                );
 
                 if ($endDate->lessThan($start)) {
                     $endDate = $start;
@@ -162,7 +193,8 @@ class DatesCalculationTest extends TestCase
 
                     if ($remainingDuration->totalMinutes <= $periodDuration->totalMinutes) {
                         $endDate->add($remainingDuration);
-                        return $endDate;
+
+                        return $this->adjustWeekends($endDate);
                     } else {
                         $endDate->add($periodDuration);
                         $remainingDuration->subtract($periodDuration);
@@ -174,11 +206,19 @@ class DatesCalculationTest extends TestCase
             $date->addDay()->startOfDay();
             $endDate = Carbon::createFromTimeString($timeline[0]['start'])->setDate($date->year, $date->month, $date->day);
 
-            while ($endDate->isWeekend()) {
-                $endDate->addDay();
-            }
+            $endDate = $this->adjustWeekends($endDate);
         }
 
         return $endDate;
+    }
+
+    private function adjustWeekends(Carbon $date): Carbon
+    {
+        $adjustedDate = $date->copy();
+        while ($adjustedDate->isWeekend()) {
+            $adjustedDate->addDay();
+        }
+
+        return $adjustedDate;
     }
 }
