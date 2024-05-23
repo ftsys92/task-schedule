@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -70,10 +71,30 @@ class Task extends Model
 
     public function getDurationForHumansAttribute(): string|null
     {
-        if (null === $this->duration) {
+        if (
+            (null === $this->duration ||
+                (null === $this->assignee) ||
+                (null === $this->assignee->working_hours_start || null === $this->assignee->working_hours_end) ||
+                (null === $this->assignee->break_hours_start || null === $this->assignee->break_hours_end)
+            )
+        ) {
             return null;
         }
 
-        return (new CarbonInterval($this->duration))->forHumans();
+        $firstPeriodStart = Carbon::createFromTimeString($this->assignee->working_hours_start);
+        $firstPeriodEnd =  Carbon::createFromTimeString($this->assignee->break_hours_start);
+        $secondPeriodStart = Carbon::createFromTimeString($this->assignee->break_hours_end);
+        $secondPeriodEnd =  Carbon::createFromTimeString($this->assignee->working_hours_end);
+
+        $dayHours = $firstPeriodStart->diffInHours($firstPeriodEnd) + $secondPeriodStart->diffInHours($secondPeriodEnd);
+
+        CarbonInterval::setCascadeFactors([
+            'minute' => [60, 'seconds'],
+            'hour' => [60, 'minutes'],
+            'day' => [$dayHours, 'hours'],
+            'week' => [5, 'days'],
+        ]);
+
+        return (new CarbonInterval($this->duration))->cascade()->forHumans();
     }
 }
