@@ -17,7 +17,7 @@ final class TaskDatesCalculator implements TaskDatesCalculatorContract
     public function calculateDates(DateTime $fromDate, DateInterval $duration, array $timeline): DatePeriod
     {
         $start = $this->calculateStartDate($fromDate, $timeline);
-        $end = $this->calculateEndDate($start, $duration, $timeline);
+        $end = $this->calculateEndDate($start, new CarbonInterval($duration), $timeline);
 
         return CarbonPeriod::create($start, $end);
     }

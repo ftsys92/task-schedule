@@ -7,6 +7,7 @@ namespace Tests\Unit;
 use App\Services\Tasks\TaskDatesCalculator;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
+use DateInterval;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -115,7 +116,7 @@ class TaskDatesCalculatorTest extends TestCase
     {
         $timeline = $testSet['timeline'];
 
-        $duration = new CarbonInterval($testSet['duration']);
+        $duration = new DateInterval($testSet['duration']);
         $startDate = Carbon::parse($testSet['date']);
 
         $calculator = new TaskDatesCalculator();

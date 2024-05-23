@@ -7,6 +7,7 @@ namespace Tests\Feature\Jobs;
 use App\Jobs\CalculateTaskDates;
 use App\Models\Task;
 use App\Models\User;
+use App\Services\Tasks\TaskDatesCalculator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -39,13 +40,13 @@ class CalculateTaskDatesTest extends TestCase
 
         $job = new CalculateTaskDates($task2->id);
 
-        $job->handle();
+        $job->handle(new TaskDatesCalculator());
 
         $task2 = $task2->fresh();
 
         self::assertEquals($user->id, $task2->assignee_id);
         self::assertEquals('2024-04-30 10:00:47', $task2->start_at);
-        self::assertEquals('2024-04-30 12:30:47', $task2->end_at);
+        self::assertEquals('2024-04-30 13:30:47', $task2->end_at);
     }
 
     public function test_calculates_start_date_and_next_day_end_date_for_a_task(): void
@@ -73,12 +74,12 @@ class CalculateTaskDatesTest extends TestCase
 
         $job = new CalculateTaskDates($task2->id);
 
-        $job->handle();
+        $job->handle(new TaskDatesCalculator());
 
         $task2 = $task2->fresh();
 
         self::assertEquals($user->id, $task2->assignee_id);
         self::assertEquals('2024-04-30 10:00:47', $task2->start_at);
-        self::assertEquals('2024-05-01 09:30:47', $task2->end_at);
+        self::assertEquals('2024-05-01 10:30:47', $task2->end_at);
     }
 }
