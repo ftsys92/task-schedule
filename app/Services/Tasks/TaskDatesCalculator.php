@@ -33,12 +33,17 @@ final class TaskDatesCalculator implements TaskDatesCalculatorContract
     private function calculateStartDate(Carbon $startDate, array $timeline): Carbon
     {
         $date = $startDate->copy();
-        foreach ($timeline as $time) {
-            $start = Carbon::createFromTimeString($time['start'])->setDate($date->year, $date->month, $date->day);
-            $end = Carbon::createFromTimeString($time['end'])->setDate($date->year, $date->month, $date->day);
 
-            if ($date->between($start, $end, false) && $date->diffInMinutes($end) >= 15) {
-                return $date; // Start date is within this period.
+        foreach ($timeline as $time) {
+            $start = $this->adjustWeekends(
+                Carbon::createFromTimeString($time['start'])->setDate($date->year, $date->month, $date->day)
+            );
+            $end = $this->adjustWeekends(
+                Carbon::createFromTimeString($time['end'])->setDate($date->year, $date->month, $date->day)
+            );
+
+            if ($date->between($start, $end, true) && $date->diffInMinutes($end) >= 15) {
+                return $this->adjustWeekends($date); // Start date is within this period.
             } elseif ($date->lessThan($start)) {
                 return $start; // Adjust start date to the beginning of this period.
             }
@@ -46,9 +51,9 @@ final class TaskDatesCalculator implements TaskDatesCalculatorContract
 
         // If the start date is after all working periods, move to the next day's first period.
         $nextDay = $date->addDay()->startOfDay();
-        $firstPeriod = $timeline[0];
+        $startDate = Carbon::createFromTimeString($timeline[0]['start'])->setDate($nextDay->year, $nextDay->month, $nextDay->day);
 
-        return Carbon::createFromTimeString($firstPeriod['start'])->setDate($nextDay->year, $nextDay->month, $nextDay->day);
+        return $this->adjustWeekends($startDate);
     }
 
     /**
@@ -68,8 +73,12 @@ final class TaskDatesCalculator implements TaskDatesCalculatorContract
 
         while ($remainingDuration->totalMinutes > 0) {
             foreach ($timeline as $time) {
-                $start = Carbon::createFromTimeString($time['start'])->setDate($date->year, $date->month, $date->day);
-                $end = Carbon::createFromTimeString($time['end'])->setDate($date->year, $date->month, $date->day);
+                $start = $this->adjustWeekends(
+                    Carbon::createFromTimeString($time['start'])->setDate($date->year, $date->month, $date->day)
+                );
+                $end = $this->adjustWeekends(
+                    Carbon::createFromTimeString($time['end'])->setDate($date->year, $date->month, $date->day)
+                );
 
                 if ($endDate->lessThan($start)) {
                     $endDate = $start;
@@ -81,7 +90,8 @@ final class TaskDatesCalculator implements TaskDatesCalculatorContract
 
                     if ($remainingDuration->totalMinutes <= $periodDuration->totalMinutes) {
                         $endDate->add($remainingDuration);
-                        return $endDate;
+
+                        return $this->adjustWeekends($endDate);
                     } else {
                         $endDate->add($periodDuration);
                         $remainingDuration->subtract($periodDuration);
@@ -92,8 +102,20 @@ final class TaskDatesCalculator implements TaskDatesCalculatorContract
             // Move to the next day's first period if there's remaining duration.
             $date->addDay()->startOfDay();
             $endDate = Carbon::createFromTimeString($timeline[0]['start'])->setDate($date->year, $date->month, $date->day);
+
+            $endDate = $this->adjustWeekends($endDate);
         }
 
         return $endDate;
+    }
+
+    private function adjustWeekends(Carbon $date): Carbon
+    {
+        $adjustedDate = $date->copy();
+        while ($adjustedDate->isWeekend()) {
+            $adjustedDate->addDay();
+        }
+
+        return $adjustedDate;
     }
 }

@@ -71,6 +71,42 @@ class TaskDatesCalculatorTest extends TestCase
                     'expected_end_date' => '2024-05-24 15:20',
                 ],
             ],
+            [
+                [
+                    'date' => '2024-05-24 17:00',
+                    'duration' => 'PT2H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-24 17:00',
+                    'expected_end_date' => '2024-05-27 10:00',
+                ],
+            ],
+            [
+                [
+                    'date' => '2024-05-25 09:00',
+                    'duration' => 'PT4H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-27 09:00',
+                    'expected_end_date' => '2024-05-27 14:00',
+                ],
+            ],
+            [
+                [
+                    'date' => '2024-05-25 18:00',
+                    'duration' => 'PT4H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-27 09:00',
+                    'expected_end_date' => '2024-05-27 14:00',
+                ],
+            ],
+            [
+                [
+                    'date' => '2024-05-25 17:45',
+                    'duration' => 'PT4H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-27 09:00',
+                    'expected_end_date' => '2024-05-27 14:00',
+                ],
+            ],
         ];
     }
 

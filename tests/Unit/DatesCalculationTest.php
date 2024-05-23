@@ -71,6 +71,15 @@ class DatesCalculationTest extends TestCase
                     'expected_end_date' => '2024-05-24 15:20',
                 ],
             ],
+            [
+                [
+                    'date' => '2024-05-24 17:00',
+                    'duration' => 'PT2H',
+                    'timeline' => $timeline,
+                    'expected_start_date' => '2024-05-24 17:00',
+                    'expected_end_date' => '2024-05-27 10:00',
+                ],
+            ],
         ];
     }
 
@@ -113,8 +122,13 @@ class DatesCalculationTest extends TestCase
 
         // If the start date is after all working periods, move to the next day's first period.
         $nextDay = $date->addDay()->startOfDay();
-        $firstPeriod = $timeline[0];
-        return Carbon::createFromTimeString($firstPeriod['start'])->setDate($nextDay->year, $nextDay->month, $nextDay->day);
+        $startDate = Carbon::createFromTimeString($timeline[0]['start'])->setDate($nextDay->year, $nextDay->month, $nextDay->day);
+
+        while ($startDate->isWeekend()) {
+            $startDate->addDay();
+        }
+
+        return $startDate;
     }
 
     /**
@@ -159,6 +173,10 @@ class DatesCalculationTest extends TestCase
             // Move to the next day's first period if there's remaining duration.
             $date->addDay()->startOfDay();
             $endDate = Carbon::createFromTimeString($timeline[0]['start'])->setDate($date->year, $date->month, $date->day);
+
+            while ($endDate->isWeekend()) {
+                $endDate->addDay();
+            }
         }
 
         return $endDate;
