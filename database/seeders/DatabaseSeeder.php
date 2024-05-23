@@ -8,16 +8,15 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'working_hours_start' => '09:00',
+            'working_hours_end' => '18:00',
+            'break_hours_start' => '12:00',
+            'break_hours_end' => '13:00',
         ]);
     }
 }
