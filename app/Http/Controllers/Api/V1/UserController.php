@@ -41,11 +41,15 @@ class UserController
         $name = $request->input('name');
         $workingHoursStart = $request->input('working_hours_start');
         $workingHoursEnd = $request->input('working_hours_end');
+        $breakHoursStart = $request->input('break_hours_start');
+        $breakHoursEnd = $request->input('break_hours_end');
 
         $user->update([
             'name' => $name,
             'working_hours_start' => $workingHoursStart,
             'working_hours_end' => $workingHoursEnd,
+            'break_hours_start' => $breakHoursStart,
+            'break_hours_end' => $breakHoursEnd,
         ]);
 
         return new JsonResponse($user);
