@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Unit\Services\Tasks;
 
-use App\Services\Tasks\TaskDatesCalculator;
+use App\Services\Tasks\CarbonTaskDatesCalculator;
 use Carbon\Carbon;
 use DateInterval;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use InvalidArgumentException;
 
-class TaskDatesCalculatorTest extends TestCase
+class CarbonTaskDatesCalculatorTest extends TestCase
 {
     public static function provides8HoursWorkAnd1HourLunchTestSet(): array
     {
@@ -146,7 +146,7 @@ class TaskDatesCalculatorTest extends TestCase
         $duration = new DateInterval($testSet['duration']);
         $startDate = Carbon::parse($testSet['date']);
 
-        $calculator = new TaskDatesCalculator();
+        $calculator = new CarbonTaskDatesCalculator();
         $dates = $calculator->calculateDates($startDate, $duration, $timeline);
 
         self::assertEquals($testSet['expected_start_date'], $dates->getStartDate()->format('Y-m-d H:i'));
@@ -200,7 +200,7 @@ class TaskDatesCalculatorTest extends TestCase
         $duration = new DateInterval('PT4H');
         $startDate = Carbon::parse('2024-05-25 17:45');
 
-        $calculator = new TaskDatesCalculator();
+        $calculator = new CarbonTaskDatesCalculator();
         $calculator->calculateDates($startDate, $duration, $timeline);
     }
 }

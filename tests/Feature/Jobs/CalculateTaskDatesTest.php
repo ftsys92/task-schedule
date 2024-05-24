@@ -7,7 +7,7 @@ namespace Tests\Feature\Jobs;
 use App\Jobs\CalculateTaskDates;
 use App\Models\Task;
 use App\Models\User;
-use App\Services\Tasks\TaskDatesCalculator;
+use App\Services\Tasks\CarbonTaskDatesCalculator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -40,7 +40,7 @@ class CalculateTaskDatesTest extends TestCase
 
         $job = new CalculateTaskDates($task2->id);
 
-        $job->handle(new TaskDatesCalculator());
+        $job->handle(new CarbonTaskDatesCalculator());
 
         $task2 = $task2->fresh();
 
@@ -74,7 +74,7 @@ class CalculateTaskDatesTest extends TestCase
 
         $job = new CalculateTaskDates($task2->id);
 
-        $job->handle(new TaskDatesCalculator());
+        $job->handle(new CarbonTaskDatesCalculator());
 
         $task2 = $task2->fresh();
 
