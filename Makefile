@@ -38,3 +38,7 @@ psalm: ## Run Psalm analysis
 .PHONY: psalm-baseline
 psalm-baseline: ## Save errors you wanted to skip
 	@docker compose run worker vendor/bin/psalm.phar --set-baseline=psalm-baseline.xml
+
+.PHONY: tinker
+tinker: ## Run Laravel tinker
+	@docker compose run worker php artisan tinker

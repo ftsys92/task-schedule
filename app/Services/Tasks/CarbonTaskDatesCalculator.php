@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Tasks;
 
-use App\Services\Tasks\Contracts\TaskDatesCalculator as TaskDatesCalculatorContract;
+use App\Services\Tasks\Contracts\TaskDatesCalculator;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
@@ -13,7 +13,7 @@ use DateInterval;
 use DatePeriod;
 use InvalidArgumentException;
 
-final class TaskDatesCalculator implements TaskDatesCalculatorContract
+final class CarbonTaskDatesCalculator implements TaskDatesCalculator
 {
     public function calculateDates(DateTime $fromDate, DateInterval $duration, array $timeline): DatePeriod
     {
@@ -39,7 +39,7 @@ final class TaskDatesCalculator implements TaskDatesCalculatorContract
         }
 
         foreach ($timeline as $time) {
-            if (!is_array($time)) {
+            if (!is_array($time) || !isset($time['start']) || !isset($time['end'])) {
                 return false;
             }
 
